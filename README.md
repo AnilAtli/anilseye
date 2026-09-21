@@ -26,6 +26,8 @@ Anıl's Eye is an independent, branded build based on the MIT-licensed [God's Ey
 
 _“pretty cool”_ — [Brendan Eich](https://x.com/BrendanEich/status/2094592096401490266), creator of JavaScript and co-founder of Mozilla and Brave · Featured on **[Pinokio](https://pinokio.co/posts/01m1m4p9xxm3qw7dnnpj2wr93g)**
 
+🌍 **[Open Anıl's Eye on GitHub Pages](https://anilatli.github.io/anilseye/)**
+
 ⚡ **Start without API keys.** Run locally from the terminal and add optional provider keys inside the app. **[→ Quick Start](#-quick-start)**
 
 </div>

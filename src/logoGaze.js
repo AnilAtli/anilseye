@@ -111,7 +111,10 @@ export function initLogoGaze(root = document) {
 
   const loadInlineLogos = async () => {
     try {
-      const source = logos[0].dataset.logoSrc || '/logo.svg';
+      const rawSource = logos[0].dataset.logoSrc || '/logo.svg';
+      const source = rawSource.startsWith('/')
+        ? `${import.meta.env?.BASE_URL || '/'}${rawSource.slice(1)}`
+        : rawSource;
       const response = await window.fetch(source);
       if (!response.ok) return;
       const markup = await response.text();
