@@ -854,6 +854,7 @@
   "satellites-layer": {
     "exports": ["./layers/satellites"],
     "modules": [
+      "src/data/browserTle.js",
       "src/data/issPass.js",
       "src/data/satelliteClass.js",
       "src/layers/satellites/catalog.js",
@@ -877,6 +878,7 @@
   "launches-layer": {
     "exports": ["./layers/launches"],
     "modules": [
+      "src/data/browserTle.js",
       "src/layers/launches/camera.js",
       "src/layers/launches/controls.js",
       "src/layers/launches/index.js",
@@ -1055,6 +1057,7 @@
   "radio-layer": {
     "exports": ["./layers/radio"],
     "modules": [
+      "src/sources/radioBrowser.js",
       "src/data/iconOrientation.js",
       "src/data/layerState.js",
       "src/data/radioCountry.js",
@@ -1200,6 +1203,8 @@
       "./standalone/catalog"
     ],
     "modules": [
+      "src/data/browserTle.js",
+      "src/sources/radioBrowser.js",
       "src/scenes/nepalEvidencePack.js",
       "src/data/bhoteKoshiEvent.js",
       "src/data/bhoteKoshiEmbeddedMedia.js",
@@ -1828,6 +1833,8 @@
   "application-layer-construction": {
     "exports": ["./application/layers"],
     "modules": [
+      "src/data/browserTle.js",
+      "src/sources/radioBrowser.js",
       "src/data/bhoteKoshiEvent.js",
       "src/data/bhoteKoshiEmbeddedMedia.js",
       "src/data/bhoteKoshiLocator.js",
@@ -2438,7 +2445,11 @@
   },
   "bikeshare-source": {
     "exports": ["./layers/bikeshare/source"],
-    "modules": ["src/layers/bikeshare/source.js"],
+    "modules": [
+      "src/layers/bikeshare/source.js",
+      "src/layers/bikeshare/registry.js",
+      "src/layers/bikeshare/policy.js"
+    ],
     "external": []
   },
   "cctv-source": {
@@ -2469,17 +2480,22 @@
   },
   "launches-source": {
     "exports": ["./layers/launches/source"],
-    "modules": ["src/layers/launches/source.js"],
+    "modules": ["src/layers/launches/source.js", "src/data/browserTle.js"],
     "external": []
   },
   "radio-source": {
     "exports": ["./layers/radio/source"],
-    "modules": ["src/layers/radio/policy.js", "src/layers/radio/source.js"],
+    "modules": [
+      "src/layers/radio/policy.js",
+      "src/layers/radio/source.js",
+      "src/sources/radioBrowser.js",
+      "src/data/radioCountry.js"
+    ],
     "external": []
   },
   "satellites-source": {
     "exports": ["./layers/satellites/source"],
-    "modules": ["src/layers/satellites/source.js"],
+    "modules": ["src/layers/satellites/source.js", "src/data/browserTle.js"],
     "external": []
   },
   "traffic-source-factory": {

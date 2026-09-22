@@ -1,8 +1,17 @@
-import { launchLibraryRecentUrl } from '../../data/spaceProviderRequests.js';
-import { readBrowserTle } from '../satellites/source.js';
+import { readBrowserTle } from '../../data/browserTle.js';
 
 const LAUNCH_CACHE_MS = 15 * 60 * 1000;
 let browserLaunches = null;
+
+function recentLaunchUrl(end) {
+  const start = new Date(end.getTime() - 30 * 86400000);
+  const url = new URL('https://ll.thespacedevs.com/2.3.0/launches/');
+  url.searchParams.set('net__gte', start.toISOString());
+  url.searchParams.set('net__lte', end.toISOString());
+  url.searchParams.set('limit', '100');
+  url.searchParams.set('mode', 'detailed');
+  return url.href;
+}
 
 /** Read launch records and their optional active-orbit catalog with explicit cancellation. */
 export function createLaunchSource({
@@ -19,7 +28,7 @@ export function createLaunchSource({
       )
         return browserLaunches.payload;
       const endpoint = browserDirect
-        ? launchLibraryRecentUrl(new Date()).href
+        ? recentLaunchUrl(new Date())
         : '/api/launches';
       const response = await fetchImpl(endpoint, { signal });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
