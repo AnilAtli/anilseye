@@ -34,6 +34,22 @@ test('launch and active-orbit responses reject cancellation during parsing', asy
   }
 });
 
+test('static launch source reads the public launch feed directly', async () => {
+  const calls = [];
+  const source = createLaunchSource({
+    browserDirect: true,
+    fetchImpl: async (url) => {
+      calls.push(url);
+      return new Response(JSON.stringify({ results: [] }));
+    },
+  });
+  assert.deepEqual(await source.getLaunches(), { results: [] });
+  assert.match(
+    calls[0],
+    /^https:\/\/ll\.thespacedevs\.com\/2\.3\.0\/launches\//,
+  );
+});
+
 test('launch factories construct independently without starting a scene or source request', () => {
   const source = {
     getLaunches() {

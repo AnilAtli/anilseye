@@ -53,6 +53,10 @@ export function createLifecycle({
      * @param {Cesium.Viewer} viewer - The Cesium viewer instance.
      */
     async init(viewer) {
+      if (source.backendRequired)
+        throw new Error(
+          'Live camera monitoring requires an API server; GitHub Pages only serves static files.',
+        );
       layerState._sourceAbort?.abort();
       const sourceAbort = new AbortController();
       layerState._sourceAbort = sourceAbort;

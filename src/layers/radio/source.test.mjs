@@ -70,6 +70,37 @@ test('radio source propagates denial and cancels completed body parsing', async 
   assert.equal(called, false);
 });
 
+test('static radio source normalizes a CORS directory and skips optional click telemetry', async () => {
+  const calls = [];
+  const source = createRadioSource({
+    browserDirect: true,
+    fetchImpl: async (url) => {
+      calls.push(url);
+      return new Response(
+        JSON.stringify([
+          {
+            stationuuid: id,
+            name: 'Test Radio',
+            geo_lat: 41,
+            geo_long: 29,
+            url_resolved: 'https://radio.example.org/live.mp3',
+            lastcheckok: 1,
+            hls: 0,
+            codec: 'MP3',
+          },
+        ]),
+      );
+    },
+  });
+  const directory = await source.getDirectory();
+  assert.equal(directory.stations.length, 1);
+  assert.equal(directory.stations[0].name, 'Test Radio');
+  assert.equal(directory.degraded, false);
+  await source.recordClick(id);
+  assert.equal(calls.length, 1);
+  assert.match(calls[0], /^https:\/\/de1\.api\.radio-browser\.info/);
+});
+
 test('radio factories keep settings and subscriptions independent without fetching or audio startup', () => {
   let requested = false;
   const source = {

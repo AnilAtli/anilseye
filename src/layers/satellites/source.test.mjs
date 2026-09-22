@@ -31,6 +31,22 @@ test('satellite sources confine catalog groups and reject a cancelled body', asy
   );
 });
 
+test('static satellite source reads CelesTrak over CORS without the local API', async () => {
+  const calls = [];
+  const source = createSatelliteSource({
+    browserDirect: true,
+    fetchImpl: async (url) => {
+      calls.push(url);
+      return new Response('TEST\n1 00001U TEST\n2 00001 TEST');
+    },
+  });
+  const result = await source.readGroup('gps-ops');
+  assert.equal(result.ok, true);
+  assert.match(result.text, /^TEST/);
+  assert.equal(calls.length, 1);
+  assert.match(calls[0], /GROUP=gps-ops&FORMAT=tle/);
+});
+
 test('satellite factories keep control state separate and construct without requests', () => {
   const source = {
     readGroup() {

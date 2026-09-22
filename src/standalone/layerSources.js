@@ -25,14 +25,24 @@ export function createStandaloneLayerSources() {
     vessels: createAisStreamSource({
       apiUrl: import.meta.env?.VITE_AIS_LIVE_API_URL || '/api/ais-live',
     }),
-    cctv: createCctvSource(),
-    radio: createRadioSource(),
+    cctv: createCctvSource({
+      backendRequired: import.meta.env?.VITE_STATIC_PAGES === 'true',
+    }),
+    radio: createRadioSource({
+      browserDirect: import.meta.env?.VITE_STATIC_PAGES === 'true',
+    }),
     traffic: createTrafficSource(),
     transit: createTransitSource(),
-    bikeshare: createBikeshareSource(),
+    bikeshare: createBikeshareSource({
+      browserDirect: import.meta.env?.VITE_STATIC_PAGES === 'true',
+    }),
     installations: createInstallationSource(),
-    satellites: createSatelliteSource(),
-    launches: createLaunchSource(),
+    satellites: createSatelliteSource({
+      browserDirect: import.meta.env?.VITE_STATIC_PAGES === 'true',
+    }),
+    launches: createLaunchSource({
+      browserDirect: import.meta.env?.VITE_STATIC_PAGES === 'true',
+    }),
     alpr: createOverpassAlprSource(),
     firms: createFirmsSource(),
   };

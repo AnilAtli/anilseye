@@ -3,6 +3,7 @@ import * as Cesium from 'cesium';
 import {
   createApplicationViewer,
   installTrackpadPinchZoom,
+  syncGlobeResolutionScale,
 } from '../app/viewer.js';
 import { registerDataCredits } from '../data/dataCredits.js';
 import { configureCreditKeyboardAccess } from '../creditKeyboard.js';
@@ -54,6 +55,16 @@ export async function createApplicationScene({
   defer(() => {
     uninstallRenderGovernor(viewer);
     if (!viewer.isDestroyed()) viewer.destroy();
+  });
+  let resizeTimer;
+  const onResize = () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => syncGlobeResolutionScale(viewer), 150);
+  };
+  window.addEventListener('resize', onResize);
+  defer(() => {
+    clearTimeout(resizeTimer);
+    window.removeEventListener('resize', onResize);
   });
   defer(installTrackpadPinchZoom(viewer));
   registerDataCredits(viewer, credits);

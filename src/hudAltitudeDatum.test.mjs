@@ -248,3 +248,26 @@ test('the corrected readouts are the MSL datum, not a coincidence of the SFO sig
     env.restore();
   }
 });
+
+test('the loading screen keeps the large geoid grid off the startup path', async () => {
+  const env = installHudEnvironment();
+  let loading = true;
+  const originalGetElementById = globalThis.document.getElementById;
+  globalThis.document.getElementById = (id) =>
+    id === 'loading-screen'
+      ? { classList: { contains: () => !loading } }
+      : originalGetElementById(id);
+  let hud;
+  try {
+    hud = new IntelHUD(env.viewer);
+    hud._updateCameraData();
+    assert.equal(hud._geoidRequested, false);
+    loading = false;
+    hud._updateCameraData();
+    assert.equal(hud._geoidRequested, true);
+    await ensureGeoidReady();
+  } finally {
+    hud?.destroy();
+    env.restore();
+  }
+});

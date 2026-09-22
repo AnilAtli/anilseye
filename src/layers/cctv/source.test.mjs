@@ -2,6 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createCctvSource, createCctvLayer } from './index.js';
 
+test('static camera source declares its required live backend', () => {
+  assert.equal(
+    createCctvSource({ backendRequired: true }).backendRequired,
+    true,
+  );
+  assert.equal(createCctvSource().backendRequired, false);
+});
+
 const camera = {
   id: 'pack/camera ?x',
   name: 'Camera & road',

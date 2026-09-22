@@ -2,6 +2,23 @@ import * as Cesium from 'cesium';
 
 const PINCH_ZOOM_MULTIPLIER = 8;
 const MAX_PINCH_PIXEL_DELTA = 120;
+const MAX_GLOBE_PIXELS = 3_600_000;
+
+/** Bound GPU render targets on large monitors without changing normal HD views. */
+export function globeResolutionScale(width, height) {
+  const pixels = width * height;
+  if (!Number.isFinite(pixels) || pixels <= 0) return 1;
+  return Math.min(1, Math.sqrt(MAX_GLOBE_PIXELS / pixels));
+}
+
+/** Reapply the pixel budget when a browser window changes size. */
+export function syncGlobeResolutionScale(viewer, viewport = globalThis.window) {
+  const scale = globeResolutionScale(
+    viewport?.innerWidth,
+    viewport?.innerHeight,
+  );
+  if (viewer.resolutionScale !== scale) viewer.resolutionScale = scale;
+}
 
 function boundedPinchDelta(delta) {
   if (!Number.isFinite(delta) || delta === 0) return delta;
@@ -119,11 +136,14 @@ export function createApplicationViewer({ container, creditContainer }) {
     infoBox: false,
     baseLayer: false,
     creditContainer,
-    msaaSamples: 4,
+    // Two samples preserve silhouette edges while halving the multisample
+    // render target cost of the previous four-sample setting.
+    msaaSamples: 2,
     contextOptions: { webgl: { preserveDrawingBuffer: true } },
   });
   try {
     viewer.targetFrameRate = 60;
+    syncGlobeResolutionScale(viewer);
     viewer.scene.globe.show = false;
     viewer.scene.skyAtmosphere.show = true;
     viewer.scene.skyAtmosphere.atmosphereLightIntensity = 18;

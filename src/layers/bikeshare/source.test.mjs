@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createBikeshareSource } from './source.js';
+import { GBFS_CITY_REGISTRY } from './registry.js';
 test('station source keeps upstream URLs behind the fixed GBFS endpoint', async () => {
   const calls = [];
   const source = createBikeshareSource({
@@ -40,5 +41,23 @@ test('cancelled station parsing never publishes the response', async () => {
       signal: controller.signal,
     }),
     { name: 'AbortError' },
+  );
+});
+
+test('static station source uses only registered CORS feeds directly', async () => {
+  const calls = [];
+  const source = createBikeshareSource({
+    browserDirect: true,
+    fetchImpl: async (url) => {
+      calls.push(url);
+      return new Response('{"data":{"stations":[]}}');
+    },
+  });
+  const url = GBFS_CITY_REGISTRY[0].stationStatusUrl;
+  await source.getStations(url);
+  assert.deepEqual(calls, [url]);
+  await assert.rejects(
+    source.getStations('https://example.test/stations.json'),
+    /Unknown GBFS feed/,
   );
 });

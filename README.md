@@ -28,6 +28,12 @@ _“pretty cool”_ — [Brendan Eich](https://x.com/BrendanEich/status/20945920
 
 🌍 **[Open Anıl's Eye on GitHub Pages](https://anilatli.github.io/anilseye/)**
 
+> GitHub Pages is a static edition, not the full live demo: public earthquakes,
+> satellites, launches, radio, and supported bike-share feeds can run in the
+> browser, but CCTV, aircraft, vessels, traffic proxies, server-side search,
+> provider keys, and AI voice need a separately hosted API server. See the
+> [deployment compatibility report](docs/GITHUB_PAGES_COMPATIBILITY.md).
+
 ⚡ **Start without API keys.** Run locally from the terminal and add optional provider keys inside the app. **[→ Quick Start](#-quick-start)**
 
 </div>

@@ -133,6 +133,7 @@ export class IntelHUD {
     // `ellipsoidalToMslDisplayM` passes the raw height straight through.
     this._geoidRequested = false;
     this._geoidReady = false;
+    this._geoidIdleRequest = null;
     this._geoidCellKey = null;
     this._geoidN = null;
     // Whether the LAST painted tick actually had N. The grid resolves mid-
@@ -296,15 +297,32 @@ export class IntelHUD {
    */
   _geoidUndulationM(latDeg, lonDeg) {
     if (!this._geoidReady) {
+      // The global opening view does not need metre-level altitude correction.
+      // Keep the large EGM96 grid off the critical startup path, then let the
+      // browser parse it during idle time once the loading screen has cleared.
+      const loadingScreen =
+        globalThis.document?.getElementById?.('loading-screen');
+      if (loadingScreen && !loadingScreen.classList.contains('hidden'))
+        return null;
       if (!this._geoidRequested) {
         this._geoidRequested = true;
-        ensureGeoidReady()
-          .then(() => {
-            this._geoidReady = true;
-          })
-          .catch(() => {
-            /* readout falls back to the uncorrected height */
+        const loadGeoid = () => {
+          this._geoidIdleRequest = null;
+          ensureGeoidReady()
+            .then(() => {
+              this._geoidReady = true;
+            })
+            .catch(() => {
+              /* readout falls back to the uncorrected height */
+            });
+        };
+        if (loadingScreen && globalThis.requestIdleCallback) {
+          this._geoidIdleRequest = requestIdleCallback(loadGeoid, {
+            timeout: 8000,
           });
+        } else {
+          loadGeoid();
+        }
       }
       return null;
     }
@@ -912,6 +930,8 @@ export class IntelHUD {
 
   /** Tear down all running intervals. Call when discarding the HUD instance. */
   destroy() {
+    if (this._geoidIdleRequest !== null)
+      globalThis.cancelIdleCallback?.(this._geoidIdleRequest);
     clearInterval(this._updateInterval);
     clearInterval(this._recBlinkInterval);
     clearInterval(this._timestampInterval);
